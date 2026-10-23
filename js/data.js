@@ -213,6 +213,5 @@ const STICKER_IMAGES = [
   { name: 'Spider-Man Menembak Jaring', src: 'assets/stickers/spiderman-web.png' },
   { name: 'Jaring Laba-laba', src: 'assets/stickers/spider-web.png' },
   { name: 'Kacamata Hitam', src: 'assets/stickers/sunglasses.png' },
-  { name: 'Doraemon', src: 'assets/stickers/doraemon.png' },
   { name: 'Domba Lucu', src: 'assets/stickers/domba-lucu.png' },
 ];
