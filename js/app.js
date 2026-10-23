@@ -320,7 +320,8 @@ function fitCanvas() {
   c.style.width = pz.w * cssScale + 'px'; c.style.height = pz.h * cssScale + 'px';
   requestRender();
 }
-function requestRender() { if (!raf) raf = requestAnimationFrame(() => { raf = 0; if (state.step !== 'capture') renderPaper(state.step === 'frame' ? cxF : cx, previewScale, state, { ui: state.step === 'edit', k: cssScale }); }); }
+function requestRender() { if (!raf) raf = requestAnimationFrame(() => { raf = 0; if (state.step !== 'capture') try { renderPaper(state.step === 'frame' ? cxF : cx, previewScale, state, { ui: state.step === 'edit', k: cssScale }); }
+    catch (err) { console.error(err); toast('Gagal menggambar: ' + err.message); } }); }
 
 const selEl = () => state.elements.find(e => e.id === state.selected);
 function select(id) { state.selected = id; buildElBar(); requestRender(); }
@@ -761,23 +762,44 @@ $('#dlPanel').addEventListener('click', e => {
 });
 
 async function exportBlob(fmt, dpi) {
-  const pz = outSize(), s = dpi / 300, l = LY();
-  const c = document.createElement('canvas');
-  c.width = Math.round(pz.w * s); c.height = Math.round(pz.h * s);
-  const x = c.getContext('2d');
-  x.imageSmoothingQuality = 'high';
-  const fr = state.frame;
-  x.fillStyle = (centered() || landCanvas()) && fr.bgType === 'image' ? '#ffffff' : (fr.c1 || '#ffffff');
-  x.fillRect(0, 0, c.width, c.height);
-  if (landCanvas()) { // skala layout lanskap agar lebarnya = lebar kanvas, lalu taruh di tengah
-    const k = pz.w / l.w;
-    renderPaper(x, s * k, state, { ui: false, oy: (pz.h / k - l.h) / 2 });
-  } else {
-    renderPaper(x, s, state, { ui: false, ox: centered() ? l.w / 2 : 0 });
+  const pz = outSize(), l = LY(), fr = state.frame;
+  /* Beberapa HP gagal menggambar kanvas besar (hasilnya kosong/transparan kecuali sebagian).
+     Setelah menggambar, piksel latar diperiksa; kalau kosong, ulangi dengan resolusi lebih kecil. */
+  let s = dpi / 300, c, tries = 0;
+  for (;;) {
+    c = document.createElement('canvas');
+    c.width = Math.round(pz.w * s); c.height = Math.round(pz.h * s);
+    const x = c.getContext('2d');
+    x.imageSmoothingQuality = 'high';
+    x.fillStyle = (centered() || landCanvas()) && fr.bgType === 'image' ? '#ffffff' : (fr.c1 || '#ffffff');
+    x.fillRect(0, 0, c.width, c.height);
+    if (landCanvas()) { // skala layout lanskap agar lebarnya = lebar kanvas, lalu taruh di tengah
+      const k = pz.w / l.w;
+      renderPaper(x, s * k, state, { ui: false, oy: (pz.h / k - l.h) / 2 });
+    } else {
+      renderPaper(x, s, state, { ui: false, ox: centered() ? l.w / 2 : 0 });
+    }
+    const probe = x.getImageData(2, 2, 1, 1).data;
+    const photoOk = !state.photos.slice(0, count()).some(Boolean) || photoPixelOk(x, c, l);
+    if (probe[3] === 255 && (photoOk || tries >= 2)) break; // foto polos sewarna latar tidak boleh membuat gagal
+    if (++tries > 3 || s <= .25) throw new Error('HP gagal membuat gambar. Coba pilih Normal atau tutup tab lain, lalu ulangi.');
+    s /= 2; slotCache.clear();
+    toast('Memori HP terbatas — resolusi diturunkan otomatis.');
   }
   const blob = await new Promise(r => c.toBlob(r, fmt === 'jpg' ? 'image/jpeg' : 'image/png', state.dl.q));
   if (!blob) throw new Error('Gagal membuat gambar (memori tidak cukup?). Coba resolusi lebih rendah.');
   return fmt === 'jpg' ? setJpegDpi(blob, dpi) : setPngDpi(blob, dpi);
+}
+/* true bila area foto pertama tidak sama persis dengan warna latar (artinya foto tergambar) */
+function photoPixelOk(x, c, l) {
+  const land = landCanvas(), sc = land ? c.width / l.w : c.width / outSize().w;
+  const ox = land ? 0 : (centered() ? l.w / 2 : 0), oy = land ? (c.height / sc - l.h) / 2 : 0;
+  const sl = getSlots(l, state)[0];
+  const px = Math.round((ox + sl.x + sl.w / 2) * sc), py = Math.round((oy + sl.y + sl.h / 2) * sc);
+  const d = x.getImageData(Math.max(0, px - 8), Math.max(0, py - 8), 16, 16).data;
+  const bg = x.getImageData(2, 2, 1, 1).data;
+  for (let i = 0; i < d.length; i += 4) if (d[i] !== bg[0] || d[i + 1] !== bg[1] || d[i + 2] !== bg[2]) return true;
+  return false;
 }
 const stamp = () => { const d = new Date(), p = n => String(n).padStart(2, '0'); return `${d.getFullYear()}${p(d.getMonth() + 1)}${p(d.getDate())}-${p(d.getHours())}${p(d.getMinutes())}`; };
 function saveBlob(blob, name) {
@@ -881,3 +903,5 @@ function init() {
 }
 init();
 goStep('frame');
+window.addEventListener('error', e => toast('Error: ' + e.message));
+window.addEventListener('unhandledrejection', e => toast('Error: ' + (e.reason?.message || e.reason)));
