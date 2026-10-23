@@ -2,24 +2,38 @@
 
 /* Ukuran dalam piksel pada 300 DPI.  600×1800 = 2×6 in, 1200×1800 = 4×6 in. */
 const LAYOUTS = {
-  strip4: { name: 'Strip 4 Foto', desc: '2×6 in', w: 600, h: 1800, cols: 1, rows: 4, count: 4, pad: 40, gap: 28, footer: 210, dup: true },
-  strip3: { name: 'Strip 3 Foto', desc: '2×6 in', w: 600, h: 1800, cols: 1, rows: 3, count: 3, pad: 40, gap: 28, footer: 330, dup: true },
-  strip2: { name: 'Strip 2 Foto', desc: '2×6 in', w: 600, h: 1800, cols: 1, rows: 2, count: 2, pad: 40, gap: 28, footer: 330, dup: true },
+  /* ===== 4 foto ===== */
+  grid4:   { name: 'Grid 2×2',     desc: '4×6 in', w: 1200, h: 1800, cols: 2, rows: 2, count: 4, pad: 60, gap: 40, footer: 300 },
+  circle4: { name: 'Bulat 2×2',    desc: '4×6 in', w: 1200, h: 1800, cols: 2, rows: 2, count: 4, pad: 60, gap: 40, footer: 300, shape: 'circle' },
+  rounded4:{ name: 'Kotak Bulat',  desc: '4×6 in', w: 1200, h: 1800, cols: 2, rows: 2, count: 4, pad: 60, gap: 40, footer: 300, shape: 'rounded' },
+  heart4:  { name: 'Hati 2×2',     desc: '4×6 in', w: 1200, h: 1800, cols: 2, rows: 2, count: 4, pad: 60, gap: 40, footer: 300, shape: 'heart' },
+  square4: { name: 'Kotak 2×2',    desc: '4×6 in', w: 1200, h: 1800, cols: 2, rows: 2, count: 4, pad: 60, gap: 40, footer: 300, shape: 'square' },
+  collage4a:{ name: 'Kolase 1+3',  desc: '4×6 in', w: 1200, h: 1800, count: 4, pad: 60, gap: 0, footer: 400, custom: [[60, 60, 1080, 700], [60, 800, 340, 600], [430, 800, 340, 600], [800, 800, 340, 600]] },
+  collage4b:{ name: 'Kolase Samping', desc: '4×6 in', w: 1200, h: 1800, count: 4, pad: 60, gap: 0, footer: 360, custom: [[60, 60, 520, 1380], [620, 60, 520, 440], [620, 530, 520, 440], [620, 1000, 520, 440]] },
+  stack4:  { name: 'Panorama 4',   desc: '4×6 in', w: 1200, h: 1800, cols: 1, rows: 4, count: 4, pad: 60, gap: 30, footer: 220 },
+  strip4h: { name: 'Strip Datar 4', desc: '6×2 in', w: 1800, h: 600, cols: 4, rows: 1, count: 4, pad: 30, gap: 20, footer: 90 },
+  /* ===== 5 foto ===== */
+  collage5:{ name: 'Kolase 1+4',   desc: '4×6 in', w: 1200, h: 1800, count: 5, pad: 60, gap: 0, footer: 290, custom: [[60, 60, 1080, 640], [60, 740, 530, 370], [610, 740, 530, 370], [60, 1140, 530, 370], [610, 1140, 530, 370]] },
+  grid41:  { name: 'Grid 4+1',     desc: '4×6 in', w: 1200, h: 1800, count: 5, pad: 60, gap: 0, footer: 220, custom: [[60, 60, 530, 560], [610, 60, 530, 560], [60, 660, 530, 560], [610, 660, 530, 560], [60, 1260, 1080, 320]] },
+  circle5: { name: 'Bulat 5',      desc: '4×6 in', w: 1200, h: 1800, count: 5, pad: 60, gap: 0, footer: 330, shape: 'circle', custom: [[130, 70, 420, 420], [650, 70, 420, 420], [390, 550, 420, 420], [130, 1030, 420, 420], [650, 1030, 420, 420]] },
+  /* ===== lainnya ===== */
   duo:    { name: 'Duo Tumpuk',  desc: '4×6 in', w: 1200, h: 1800, cols: 1, rows: 2, count: 2, pad: 70, gap: 40, footer: 260 },
   duoside:{ name: 'Duo Lanskap', desc: '6×4 in', w: 1800, h: 1200, cols: 2, rows: 1, count: 2, pad: 70, gap: 40, footer: 200 },
-  grid4:  { name: 'Grid 2×2',    desc: '4×6 in', w: 1200, h: 1800, cols: 2, rows: 2, count: 4, pad: 60, gap: 40, footer: 300 },
   grid6:  { name: 'Grid 2×3',    desc: '4×6 in', w: 1200, h: 1800, cols: 2, rows: 3, count: 6, pad: 60, gap: 36, footer: 240 },
   collage:{ name: 'Kolase 3',    desc: '4×6 in', w: 1200, h: 1800, count: 3, pad: 60, gap: 0, footer: 320, custom: [[60, 60, 1080, 780], [60, 880, 530, 600], [610, 880, 530, 600]] },
   single: { name: 'Satu Foto',   desc: '4×6 in', w: 1200, h: 1800, cols: 1, rows: 1, count: 1, pad: 70, gap: 0, footer: 300 },
   polaroid:{ name: 'Polaroid',   desc: '4×6 in', w: 1200, h: 1800, cols: 1, rows: 1, count: 1, pad: 90, gap: 0, footer: 520, shape: 'square' },
   wide:   { name: 'Lanskap',     desc: '6×4 in', w: 1800, h: 1200, cols: 1, rows: 1, count: 1, pad: 80, gap: 0, footer: 160 },
-  circle4:{ name: 'Bulat 2×2',   desc: '4×6 in', w: 1200, h: 1800, cols: 2, rows: 2, count: 4, pad: 60, gap: 40, footer: 300, shape: 'circle' },
   circle1:{ name: 'Bulat Satu',  desc: '4×6 in', w: 1200, h: 1800, cols: 1, rows: 1, count: 1, pad: 70, gap: 0, footer: 300, shape: 'circle' },
-  circle3:{ name: 'Bulat 3',     desc: '2×6 in', w: 600, h: 1800, cols: 1, rows: 3, count: 3, pad: 40, gap: 28, footer: 280, shape: 'circle', dup: true },
-  rounded4:{ name: 'Kotak Bulat', desc: '4×6 in', w: 1200, h: 1800, cols: 2, rows: 2, count: 4, pad: 60, gap: 40, footer: 300, shape: 'rounded' },
   heart1: { name: 'Hati',        desc: '4×6 in', w: 1200, h: 1800, cols: 1, rows: 1, count: 1, pad: 70, gap: 0, footer: 300, shape: 'heart' },
   heart2: { name: 'Hati 2',      desc: '4×6 in', w: 1200, h: 1800, cols: 1, rows: 2, count: 2, pad: 70, gap: 30, footer: 260, shape: 'heart' },
   star1:  { name: 'Bintang',     desc: '4×6 in', w: 1200, h: 1800, cols: 1, rows: 1, count: 1, pad: 70, gap: 0, footer: 300, shape: 'star' },
+  /* ===== strip 2×6 (satu strip) ===== */
+  strip4:  { name: 'Strip 4 Foto', desc: '2×6 in', w: 600, h: 1800, cols: 1, rows: 4, count: 4, pad: 40, gap: 28, footer: 210, dup: true },
+  strip5:  { name: 'Strip 5 Foto', desc: '2×6 in', w: 600, h: 1800, cols: 1, rows: 5, count: 5, pad: 36, gap: 20, footer: 150, dup: true },
+  strip3: { name: 'Strip 3 Foto', desc: '2×6 in', w: 600, h: 1800, cols: 1, rows: 3, count: 3, pad: 40, gap: 28, footer: 330, dup: true },
+  strip2: { name: 'Strip 2 Foto', desc: '2×6 in', w: 600, h: 1800, cols: 1, rows: 2, count: 2, pad: 40, gap: 28, footer: 330, dup: true },
+  circle3:{ name: 'Bulat 3',     desc: '2×6 in', w: 600, h: 1800, cols: 1, rows: 3, count: 3, pad: 40, gap: 28, footer: 280, shape: 'circle', dup: true },
 };
 
 /* ops: daftar [fungsi, nilai] mengikuti spesifikasi CSS filter */
@@ -199,4 +213,6 @@ const STICKER_IMAGES = [
   { name: 'Spider-Man Menembak Jaring', src: 'assets/stickers/spiderman-web.png' },
   { name: 'Jaring Laba-laba', src: 'assets/stickers/spider-web.png' },
   { name: 'Kacamata Hitam', src: 'assets/stickers/sunglasses.png' },
+  { name: 'Doraemon', src: 'assets/stickers/doraemon.png' },
+  { name: 'Domba Lucu', src: 'assets/stickers/domba-lucu.png' },
 ];

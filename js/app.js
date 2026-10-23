@@ -7,7 +7,7 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 const state = {
-  step: 'frame', layoutId: 'strip4', dup: false,
+  step: 'frame', layoutId: 'grid4', dup: false,
   photos: [], mirror: true,
   filter: 'normal', bright: 1, contrast: 1, sat: 1, vignette: 0, grain: 0, glow: 0, leak: false, stamp: false,
   padScale: 1, gapScale: 1,
