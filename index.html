@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Photobooth — Strip Foto Kualitas Cetak</title>
+<meta name="description" content="Photobooth online: ambil foto dengan kamera, pilih frame, filter, stiker, lalu unduh hasil beresolusi tinggi siap cetak. Tanpa login, tanpa menyimpan data.">
+<meta name="theme-color" content="#12121a">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%93%B8%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Caveat:wght@600&family=Dancing+Script:wght@700&family=Fredoka:wght@500&family=Pacifico&family=Permanent+Marker&family=Playfair+Display:wght@700&family=Poppins:wght@400;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="brand"><span class="logo">📸</span><b>Photobooth</b></div>
+  <nav class="steps" id="steps">
+    <button data-step="frame" class="on"><i>1</i><span>Layout</span></button>
+    <button data-step="capture"><i>2</i><span>Foto</span></button>
+    <button data-step="edit"><i>3</i><span>Edit</span></button>
+    <button data-step="download"><i>4</i><span>Unduh</span></button>
+  </nav>
+</header>
+
+<main>
+  <!-- ============ LANGKAH 1: PILIH TATA LETAK ============ -->
+  <section id="v-frame" class="view">
+    <div class="edit-grid">
+      <div class="stage-col"><div class="stage"><canvas id="cvFrame"></canvas></div>
+        <p class="hint">Pratinjau tata letak. Frame &amp; dekorasi bisa dipilih nanti di langkah Edit. Fotomu akan mengisi kotak bernomor.</p></div>
+      <aside class="side">
+        <div class="tabbody">
+          <h3>Pilih tata letak</h3>
+          <div class="layouts" data-layouts></div>
+          <label class="chk dup-wrap"><input type="checkbox" data-bind="dup"> Cetak 2 strip di satu kertas 4×6</label>
+        </div>
+        <div class="side-foot"><button class="btn primary" id="btnToCap">Lanjut: Ambil Foto →</button></div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ============ LANGKAH 2: AMBIL FOTO ============ -->
+  <section id="v-capture" class="view" hidden>
+    <div class="cap-grid">
+      <div class="cap-main">
+        <div class="cam" id="cam">
+          <video id="video" playsinline muted autoplay></video>
+          <div class="cam-ph" id="camPh">
+            <div class="ph-ico">📷</div>
+            <p id="camMsg">Izinkan akses kamera untuk mulai berfoto.<br><small>Foto diproses di perangkatmu dan tidak diunggah ke mana pun.</small></p>
+            <button class="btn primary" id="btnCam">Aktifkan Kamera</button>
+          </div>
+          <div class="count" id="count"></div>
+          <div class="flash" id="flash"></div>
+          <div class="badge" id="shotBadge" hidden></div>
+        </div>
+
+        <div class="cam-bar">
+          <button class="btn ghost round" id="btnSwitch" title="Ganti kamera">🔄</button>
+          <button class="shutter" id="btnShoot" title="Mulai berfoto"><span></span></button>
+          <label class="btn ghost round" title="Unggah foto dari galeri">🖼️<input type="file" id="fileIn" accept="image/*" multiple hidden></label>
+        </div>
+
+        <div class="thumbs" id="thumbs"></div>
+        <div class="cap-actions">
+          <button class="btn ghost" id="btnToFrame">← Ganti tata letak</button>
+          <button class="btn ghost" id="btnClear">Ulangi semua</button>
+          <button class="btn ghost" id="btnDemo">Pakai foto contoh</button>
+          <button class="btn primary" id="btnToEdit">Lanjut: Edit →</button>
+        </div>
+      </div>
+
+      <aside class="cap-side card">
+        <h3>Timer</h3>
+        <div class="seg" id="timerSeg">
+          <button data-timer="3">3 dtk</button><button data-timer="5">5 dtk</button><button data-timer="10">10 dtk</button>
+        </div>
+
+        <h3>Filter langsung</h3>
+        <div class="chips" data-filters></div>
+
+        <div class="opts">
+          <label class="chk"><input type="checkbox" data-bind="mirror"> Mode cermin (selfie)</label>
+          <label class="chk"><input type="checkbox" data-bind="sound"> Suara hitung mundur</label>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ============ LANGKAH 2 & 3: EDIT / UNDUH ============ -->
+  <section id="v-edit" class="view" hidden>
+    <div class="edit-grid">
+      <div class="stage-col">
+        <div class="stage" id="stage"><canvas id="cv"></canvas></div>
+        <label class="sl zoom"><span>Zoom tampilan<output></output></span><input type="range" data-bind="zoom" min="0.4" max="1" step="0.05"></label>
+        <div class="elbar card" id="elBar" hidden></div>
+        <p class="hint" id="hint">Ketuk stiker/teks di gambar untuk memilih, lalu seret untuk memindah. Tarik titik pojok untuk ubah ukuran dan titik atas untuk memutar.</p>
+      </div>
+
+      <aside class="side">
+        <div id="editPanel">
+          <div class="tabs" id="tabs"></div>
+          <div class="tabbody" id="tabBody"></div>
+        </div>
+        <div id="dlPanel" hidden></div>
+        <div class="side-foot">
+          <button class="btn ghost" id="btnBack">← Foto</button>
+          <button class="btn primary" id="btnNext">Lanjut: Unduh →</button>
+        </div>
+      </aside>
+    </div>
+  </section>
+</main>
+
+<div id="printArea"></div>
+<div class="toast" id="toast" role="status"></div>
+
+<script src="js/data.js"></script>
+<script src="js/render.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
