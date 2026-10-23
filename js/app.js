@@ -127,8 +127,6 @@ async function startCamera() {
     wantCam = true;
     $('#camPh').hidden = true;
     updateVideoStyle();
-    const sl = getSlots(LY(), state)[0];
-    if (sl.w / sl.h > 1.2 && video.videoWidth < video.videoHeight) toast('Layout ini lanskap — putar HP ke mode landscape atau tekan tombol ⟳ agar tidak banyak terpotong.');
   } catch (e) {
     const m = {
       NotAllowedError: 'Akses kamera ditolak. Izinkan kamera lewat ikon gembok di address bar, lalu coba lagi.',
@@ -150,7 +148,7 @@ function updateVideoStyle() {
   video.style.filter = toCss(filterOps(state));
   updateCamAspect();
 }
-let camRot = 0;
+let camRot = 0, camExtra = 0;
 function applyVideoTransform(car) {
   const mir = state.mirror && facing === 'user' ? 'scaleX(-1) ' : '';
   const side = camRot % 180 !== 0;
@@ -161,6 +159,10 @@ function applyVideoTransform(car) {
 function updateCamAspect() {
   const slot = getSlots(LY(), state)[0], sar = slot.w / slot.h;
   const live = stream && video.videoWidth > 0;
+  /* otomatis: layout lanskap -> kamera diputar jadi lanskap (dan sebaliknya); camExtra = putaran manual tambahan */
+  const vp = live && video.videoWidth < video.videoHeight, vl = live && video.videoWidth > video.videoHeight;
+  const base = live && ((sar > 1.1 && vp) || (sar < .9 && vl)) ? 90 : 0;
+  camRot = (base + camExtra) % 360;
   const side = camRot % 180 !== 0;
   const car = live ? (side ? video.videoHeight / video.videoWidth : video.videoWidth / video.videoHeight) : sar;
   const cam = $('#cam'), g = $('#guide');
@@ -816,7 +818,7 @@ function init() {
   $('#btnToCap').addEventListener('click', () => goStep('capture'));
   $('#btnToFrame').addEventListener('click', () => goStep('frame'));
   $('#btnShoot').addEventListener('click', runSession);
-  $('#btnRot').addEventListener('click', () => { camRot = (camRot + 90) % 360; updateCamAspect(); });
+  $('#btnRot').addEventListener('click', () => { camExtra = (camExtra + 90) % 360; updateCamAspect(); });
   $('#btnSwitch').addEventListener('click', () => { facing = facing === 'user' ? 'environment' : 'user'; if (stream) startCamera(); });
   $('#fileIn').addEventListener('change', e => { addFiles(e.target.files); e.target.value = ''; });
   $('#btnClear').addEventListener('click', () => { if (shooting) return; state.photos = []; retakeIdx = null; afterPhotosChanged(); });
