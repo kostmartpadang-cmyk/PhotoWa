@@ -775,10 +775,13 @@ async function exportBlob(fmt, dpi) {
   /* Beberapa HP gagal menggambar kanvas besar (hasilnya kosong/transparan kecuali sebagian).
      Setelah menggambar, piksel latar diperiksa; kalau kosong, ulangi dengan resolusi lebih kecil. */
   let s = dpi / 300, c, tries = 0;
+  slotCache.clear(); // lepaskan memori preview sebelum membuat gambar besar
   for (;;) {
     c = document.createElement('canvas');
     c.width = Math.round(pz.w * s); c.height = Math.round(pz.h * s);
-    const x = c.getContext('2d');
+    /* willReadFrequently = kanvas di memori biasa (bukan GPU): di HP, kanvas GPU yang besar bisa
+       kehilangan isinya di tengah proses sehingga hanya stiker (yang digambar terakhir) yang tersisa */
+    const x = c.getContext('2d', { willReadFrequently: true });
     x.imageSmoothingQuality = 'high';
     x.fillStyle = (centered() || landCanvas()) && fr.bgType === 'image' ? '#ffffff' : (fr.c1 || '#ffffff');
     x.fillRect(0, 0, c.width, c.height);
