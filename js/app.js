@@ -399,7 +399,7 @@ function addElement(props) {
   state.elements.push(el);
   select(el.id);
 }
-const baseSize = () => Math.min(LY().w, 1200) * .25;
+const baseSize = () => Math.min(Math.min(LY().w, 1200) * .25, LY().h * .18);
 function removeEl(el) {
   state.elements = state.elements.filter(e => e !== el);
   select(null);
@@ -558,14 +558,28 @@ function showEmoji() {
 
 function updateFxChips() { $$('[data-fx]').forEach(b => b.classList.toggle('on', b.dataset.fx === state.fx)); }
 
+function rotatePhoto(i, deg) {
+  const p = state.photos[i]; if (!p) return;
+  const src = p.canvas, side = deg % 180 !== 0, c = document.createElement('canvas');
+  c.width = side ? src.height : src.width; c.height = side ? src.width : src.height;
+  const x = c.getContext('2d');
+  x.translate(c.width / 2, c.height / 2); x.rotate(deg * Math.PI / 180);
+  x.drawImage(src, -src.width / 2, -src.height / 2);
+  setPhoto(i, c, p.src);
+  afterPhotosChanged();
+}
+
 function refreshPhotoPane() {
   const box = $('#photoList'); if (!box) return;
-  box.innerHTML = Array.from({ length: count() }, (_, i) => {
+  const sl = getSlots(LY(), state)[0], wantLandscape = sl.w / sl.h > 1.2;
+  const bad = state.photos.slice(0, count()).some(p => p && wantLandscape && p.canvas.width < p.canvas.height);
+  box.innerHTML = (bad ? '<p class="warn">Layout ini lanskap tetapi fotomu portrait, jadi hanya potongan tengahnya yang terlihat. Putar fotonya dengan tombol ⟲ / ⟳ di bawah.</p>' : '') + Array.from({ length: count() }, (_, i) => {
     const p = state.photos[i];
     return `<div class="prow"><div class="pth">${p ? `<img src="${p.thumb}" alt="">` : '<span>—</span>'}</div>
       <div class="pmeta"><b>Foto ${i + 1}</b><small>${p ? `${p.canvas.width}×${p.canvas.height} px` : 'Kosong'}</small></div>
+      ${p ? `<button class="btn ghost sm" data-rotp="${i}:270" title="Putar kiri">⟲</button><button class="btn ghost sm" data-rotp="${i}:90" title="Putar kanan">⟳</button>` : ''}
       <button class="btn ghost sm" data-retake="${i}">${p ? 'Ulangi' : 'Ambil'}</button></div>`;
-  }).join('') + '<p class="mut">Ulangi memakai kamera atau unggah foto pengganti di langkah 1.</p>';
+  }).join('') + '<p class="mut">Ulangi memakai kamera atau unggah foto pengganti di langkah 2.</p>';
 }
 
 /* chip filter (dipakai di langkah 1 & tab Filter) */
@@ -677,6 +691,7 @@ document.addEventListener('click', e => {
   if ((b = q('[data-shape]'))) return addElement({ type: 'shape', content: b.dataset.shape, size: baseSize(), color: $('#shapeColor').value });
   if ((b = q('[data-fx]'))) { state.fx = b.dataset.fx; updateFxChips(); return requestRender(); }
   if ((b = q('[data-quick]'))) return addElement({ type: 'text', content: b.dataset.quick, size: LY().w * .11, color: '#ffffff', outline: true, font: 'Pacifico', shadow: true });
+  if ((b = q('[data-rotp]'))) { const [i, d] = b.dataset.rotp.split(':'); return rotatePhoto(+i, +d); }
   if ((b = q('[data-retake]'))) { retakeIdx = +b.dataset.retake; goStep('capture'); updateBadge(); refreshThumbs(); if (!stream) startCamera(); return; }
   if ((b = q('[data-timer]'))) { state.timer = +b.dataset.timer; return updateTimerSeg(); }
   if ((b = q('[data-th]'))) {
