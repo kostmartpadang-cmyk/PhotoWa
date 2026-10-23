@@ -124,10 +124,11 @@ async function startCamera() {
     });
     video.srcObject = stream;
     await video.play();
-    updateCamAspect();
     wantCam = true;
     $('#camPh').hidden = true;
     updateVideoStyle();
+    const sl = getSlots(LY(), state)[0];
+    if (sl.w / sl.h > 1.2 && video.videoWidth < video.videoHeight) toast('Layout ini lanskap — putar HP ke mode landscape atau tekan tombol ⟳ agar tidak banyak terpotong.');
   } catch (e) {
     const m = {
       NotAllowedError: 'Akses kamera ditolak. Izinkan kamera lewat ikon gembok di address bar, lalu coba lagi.',
@@ -146,15 +147,25 @@ function stopCamera() {
   stream = null; video.srcObject = null;
 }
 function updateVideoStyle() {
-  video.style.transform = state.mirror && facing === 'user' ? 'scaleX(-1)' : 'none';
   video.style.filter = toCss(filterOps(state));
+  updateCamAspect();
+}
+let camRot = 0;
+function applyVideoTransform(car) {
+  const mir = state.mirror && facing === 'user' ? 'scaleX(-1) ' : '';
+  const side = camRot % 180 !== 0;
+  video.style.width = side ? (100 / car) + '%' : '100%';
+  video.style.height = side ? (car * 100) + '%' : '100%';
+  video.style.transform = `translate(-50%,-50%) ${mir}rotate(${camRot}deg)`;
 }
 function updateCamAspect() {
   const slot = getSlots(LY(), state)[0], sar = slot.w / slot.h;
   const live = stream && video.videoWidth > 0;
-  const car = live ? video.videoWidth / video.videoHeight : sar;
+  const side = camRot % 180 !== 0;
+  const car = live ? (side ? video.videoHeight / video.videoWidth : video.videoWidth / video.videoHeight) : sar;
   const cam = $('#cam'), g = $('#guide');
   cam.style.setProperty('--ar', car.toFixed(4));
+  applyVideoTransform(car);
   /* kamera tampil utuh (tanpa zoom); kotak putus-putus = area yang akan masuk ke frame */
   const gw = sar > car ? 100 : sar / car * 100, gh = sar > car ? car / sar * 100 : 100;
   g.style.width = gw + '%'; g.style.height = gh + '%';
@@ -176,9 +187,12 @@ function beep(f = 660, d = .09, type = 'sine', vol = .15) {
 }
 
 function captureFrame(i) {
+  const vw = video.videoWidth, vh = video.videoHeight, side = camRot % 180 !== 0;
   const c = document.createElement('canvas');
-  c.width = video.videoWidth; c.height = video.videoHeight;
-  c.getContext('2d').drawImage(video, 0, 0);
+  c.width = side ? vh : vw; c.height = side ? vw : vh;
+  const x = c.getContext('2d');
+  x.translate(c.width / 2, c.height / 2); x.rotate(camRot * Math.PI / 180);
+  x.drawImage(video, -vw / 2, -vh / 2);
   setPhoto(i, c, facing === 'user' ? 'cam' : 'back');
 }
 
@@ -461,8 +475,6 @@ const TABS = [
     ${sl('Vinyet', 'vignette', 0, 1, .01)}${sl('Grain film', 'grain', 0, 1, .01)}${sl('Cahaya lembut (glow)', 'glow', 0, 1, .01)}
     <div class="opts">${ck('Mode cermin (foto selfie)', 'mirror')}${ck('Light leak', 'leak')}${ck('Cap tanggal retro', 'stamp')}</div>`],
   ['frame', 'Frame', '🖼️', () => `
-    <label class="chk dup-wrap"><input type="checkbox" data-bind="dup"> Cetak 2 strip di satu kertas 4×6</label>
-    <h4>Tata letak</h4><div class="layouts" data-layouts></div>
     <h4>Tema</h4><div class="presets" data-presets></div>
     <h4>Latar</h4>
     <div class="bgc" id="bgc" data-t="solid">
@@ -804,6 +816,7 @@ function init() {
   $('#btnToCap').addEventListener('click', () => goStep('capture'));
   $('#btnToFrame').addEventListener('click', () => goStep('frame'));
   $('#btnShoot').addEventListener('click', runSession);
+  $('#btnRot').addEventListener('click', () => { camRot = (camRot + 90) % 360; updateCamAspect(); });
   $('#btnSwitch').addEventListener('click', () => { facing = facing === 'user' ? 'environment' : 'user'; if (stream) startCamera(); });
   $('#fileIn').addEventListener('change', e => { addFiles(e.target.files); e.target.value = ''; });
   $('#btnClear').addEventListener('click', () => { if (shooting) return; state.photos = []; retakeIdx = null; afterPhotosChanged(); });
