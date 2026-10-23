@@ -510,8 +510,10 @@ const TABS = [
     <label class="btn ghost">Unggah gambar (PNG, JPG, SVG)<input type="file" id="imgFile" accept="image/*" hidden></label>`],
   ['text', 'Teks', '🔤', () => `
     <h4>Teks bawah</h4>
-    <input type="text" data-bind="text.title" placeholder="Judul" maxlength="40">
-    <input type="text" data-bind="text.sub" placeholder="Sub judul (opsional)" maxlength="50">
+    <p class="mut">Tulisan “PHOTOBOOTH” dan tanggal bisa diganti atau dihapus. Kosongkan kolom Judul dan Sub judul, lalu matikan “Tampilkan tanggal”, atau tekan tombol di bawah.</p>
+    <button class="btn ghost full" id="btnClearText">Hapus semua teks bawah</button>
+    <input type="text" data-bind="text.title" placeholder="Judul (kosongkan untuk menghapus)" maxlength="40">
+    <input type="text" data-bind="text.sub" placeholder="Sub judul (kosongkan untuk menghapus)" maxlength="50">
     <div class="row2"><select data-bind="text.font">${fontOpts}</select>${colr('Warna', 'text.color')}</div>
     ${sl('Ukuran', 'text.scale', .5, 1.6, .01)}${ck('Tampilkan tanggal', 'text.showDate')}
     <h4>Teks bebas</h4>
@@ -902,6 +904,10 @@ function init() {
     try { const c = await loadImageFile(f); addElement({ type: 'image', img: c, ar: c.height / c.width, size: baseSize() * 1.3 }); }
     catch { toast('Gambar tidak bisa dibaca.'); }
     e.target.value = '';
+  });
+  $('#btnClearText').addEventListener('click', () => {
+    Object.assign(state.text, { title: '', sub: '', showDate: false });
+    syncBinds(); requestRender(); toast('Teks bawah dihapus. Isi lagi kapan saja lewat kolom Judul.');
   });
   $('#btnAddText').addEventListener('click', () => {
     const t = $('#freeText').value.trim() || 'Halo!';
