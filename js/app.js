@@ -759,7 +759,7 @@ async function exportBlob(fmt, dpi) {
     const fr = state.frame;
     x.fillStyle = fr.bgType === 'solid' || fr.bgType === 'gradient' || fr.bgType === 'pattern' ? fr.c1 : '#ffffff';
     x.fillRect(0, 0, c.width, c.height);
-  } else if (fmt === 'jpg') { x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); }
+  } else { x.fillStyle = state.frame.c1 || '#fff'; x.fillRect(0, 0, c.width, c.height); }
   renderPaper(x, s, state, { ui: false, ox: centered() ? LY().w / 2 : 0 });
   const blob = await new Promise(r => c.toBlob(r, fmt === 'jpg' ? 'image/jpeg' : 'image/png', state.dl.q));
   if (!blob) throw new Error('Gagal membuat gambar (memori tidak cukup?). Coba resolusi lebih rendah.');
