@@ -36,6 +36,22 @@ const FILTERS = [
   { id: 'drama',   name: 'Dramatis', ops: [['contrast', 1.35], ['saturate', 1.2], ['brightness', 0.92]] },
   { id: 'pink',    name: 'Pink',    ops: [['sepia', 0.3], ['saturate', 1.5], ['hue-rotate', -30], ['brightness', 1.08]] },
   { id: 'film',    name: 'Film',    ops: [['contrast', 1.1], ['saturate', 0.9], ['sepia', 0.2], ['brightness', 1.02]] },
+  { id: 'bright',  name: 'Cerah',     ops: [['brightness', 1.15], ['saturate', 1.2], ['contrast', 1.05]] },
+  { id: 'peach',   name: 'Peach',     ops: [['sepia', 0.25], ['saturate', 1.4], ['hue-rotate', -15], ['brightness', 1.12], ['contrast', 0.95]] },
+  { id: 'mint',    name: 'Mint',      ops: [['hue-rotate', 20], ['saturate', 1.2], ['brightness', 1.08], ['sepia', 0.1]] },
+  { id: 'lav',     name: 'Lavender',  ops: [['hue-rotate', 235], ['saturate', 0.9], ['brightness', 1.1], ['sepia', 0.1]] },
+  { id: 'sunset',  name: 'Senja',     ops: [['sepia', 0.4], ['saturate', 1.8], ['hue-rotate', -20], ['brightness', 1.05]] },
+  { id: 'kodak',   name: 'Kodak',     ops: [['sepia', 0.15], ['contrast', 1.15], ['saturate', 1.25], ['hue-rotate', -5]] },
+  { id: 'retro70', name: 'Retro 70s', ops: [['sepia', 0.55], ['saturate', 1.5], ['hue-rotate', -25], ['contrast', 0.9], ['brightness', 1.05]] },
+  { id: 'cyber',   name: 'Cyber',     ops: [['hue-rotate', 300], ['saturate', 1.7], ['contrast', 1.2], ['brightness', 0.95]] },
+  { id: 'matcha',  name: 'Matcha',    ops: [['hue-rotate', 40], ['sepia', 0.2], ['saturate', 1.1], ['brightness', 1.05]] },
+  { id: 'ice',     name: 'Es',        ops: [['hue-rotate', 190], ['saturate', 0.8], ['brightness', 1.12], ['contrast', 0.95]] },
+  { id: 'highkey', name: 'High Key',  ops: [['brightness', 1.25], ['contrast', 0.85], ['saturate', 0.9]] },
+  { id: 'lowkey',  name: 'Low Key',   ops: [['brightness', 0.8], ['contrast', 1.4], ['saturate', 0.9]] },
+  { id: 'silver',  name: 'Silver',    ops: [['grayscale', 1], ['brightness', 1.1], ['contrast', 0.9]] },
+  { id: 'cinema',  name: 'Sinema',    ops: [['contrast', 1.25], ['saturate', 0.75], ['sepia', 0.15], ['hue-rotate', 8], ['brightness', 0.92]] },
+  { id: 'gold',    name: 'Emas',      ops: [['sepia', 0.5], ['saturate', 1.6], ['brightness', 1.08], ['contrast', 1.05]] },
+  { id: 'rose',    name: 'Mawar',     ops: [['sepia', 0.2], ['hue-rotate', -40], ['saturate', 1.3], ['brightness', 1.08]] },
   { id: 'moody',   name: 'Moody',   ops: [['contrast', 1.2], ['saturate', 0.7], ['brightness', 0.9], ['hue-rotate', 8]] },
 ];
 
@@ -53,7 +69,7 @@ const FONTS = [
 
 const PATTERNS = [
   ['dots', 'Polkadot'], ['stripes', 'Garis'], ['checker', 'Catur'], ['gingham', 'Gingham'],
-  ['hearts', 'Hati'], ['stars', 'Bintang'], ['grid', 'Kotak-kotak'],
+  ['hearts', 'Hati'], ['stars', 'Bintang'], ['grid', 'Kotak-kotak'], ['diamonds', 'Berlian'], ['zigzag', 'Zigzag'],
 ];
 
 const FRAME_DEFAULT = {
@@ -92,6 +108,22 @@ const FRAME_PRESETS = [
   { id: 'pastel',  name: 'Pastel',   frame: { bgType: 'gradient', c1: '#a8edea', c2: '#fed6e3', angle: 160, radius: 22, pBorder: 6, pBorderColor: '#ffffff', shadow: true }, text: { color: '#4a5a7a', font: 'Fredoka' } },
   { id: 'blueprint', name: 'Grid Biru', frame: { bgType: 'pattern', pattern: 'grid', c1: '#e3f2fd', patFg: '#90caf9', style: 'line', styleColor: '#1976d2', pBorder: 4, pBorderColor: '#ffffff' }, text: { color: '#0d47a1', font: 'Press Start 2P' } },
   { id: 'kraft',   name: 'Kraft',    frame: { c1: '#c8a97e', style: 'line', styleColor: '#ffffff', pBorder: 8, pBorderColor: '#fffaf0', shadow: true }, text: { color: '#fffaf0', font: 'Permanent Marker' } },
+  { id: 'sky',     name: 'Langit',    frame: { bgType: 'gradient', c1: '#89f7fe', c2: '#66a6ff', angle: 170, style: 'scallop', styleColor: '#ffffff', radius: 16 }, text: { color: '#ffffff', font: 'Fredoka' } },
+  { id: 'berry',   name: 'Berry',     frame: { bgType: 'gradient', c1: '#f093fb', c2: '#f5576c', angle: 160, style: 'line', styleColor: '#ffffff', radius: 20 }, text: { color: '#ffffff', font: 'Pacifico' } },
+  { id: 'lemon',   name: 'Lemon',     frame: { bgType: 'pattern', pattern: 'dots', c1: '#fff9c4', patFg: '#ffe082', style: 'double', styleColor: '#fbc02d', radius: 12 }, text: { color: '#8d6e00', font: 'Fredoka' } },
+  { id: 'sage',    name: 'Sage',      frame: { c1: '#cfe3d0', style: 'line', styleColor: '#ffffff', pBorder: 8, pBorderColor: '#ffffff', shadow: true, radius: 6 }, text: { color: '#3e5c43', font: 'Playfair Display' } },
+  { id: 'noir2',   name: 'Hitam Putih', frame: { c1: '#000000', style: 'double', styleColor: '#ffffff' }, text: { color: '#ffffff', font: 'Bebas Neue' } },
+  { id: 'diamond', name: 'Berlian',   frame: { bgType: 'pattern', pattern: 'diamonds', c1: '#1b2a49', patFg: '#2e4a7d', style: 'corners', styleColor: '#ffd84d' }, text: { color: '#ffd84d', font: 'Bebas Neue' } },
+  { id: 'zigzag',  name: 'Zigzag',    frame: { bgType: 'pattern', pattern: 'zigzag', c1: '#fff3e0', patFg: '#ffb74d', radius: 10, pBorder: 6, pBorderColor: '#ffffff', shadow: true }, text: { color: '#e65100', font: 'Permanent Marker' } },
+  { id: 'neon',    name: 'Neon',      frame: { c1: '#0d0221', style: 'line', styleColor: '#ff2ec4', pBorder: 4, pBorderColor: '#00f0ff' }, text: { color: '#00f0ff', font: 'Press Start 2P' } },
+  { id: 'rosegold', name: 'Rose Gold', frame: { bgType: 'gradient', c1: '#f6d5d0', c2: '#e8b4b8', angle: 160, style: 'double', styleColor: '#b76e79', radius: 8 }, text: { color: '#8a4b55', font: 'Dancing Script' } },
+  { id: 'sand',    name: 'Pasir',     frame: { c1: '#f3e9dc', style: 'dots', styleColor: '#c9a27e', radius: 12, shadow: true }, text: { color: '#7a5c3e', font: 'Playfair Display' } },
+  { id: 'carnival', name: 'Karnaval', frame: { bgType: 'pattern', pattern: 'stripes', c1: '#ffffff', patFg: '#ff8a80', style: 'scallop', styleColor: '#ff5252', pBorder: 8, pBorderColor: '#ffffff' }, text: { color: '#d32f2f', font: 'Fredoka' } },
+  { id: 'grape',   name: 'Anggur',    frame: { bgType: 'gradient', c1: '#8e2de2', c2: '#4a00e0', angle: 160, style: 'hearts', styleColor: '#ffd1ff', radius: 14 }, text: { color: '#ffffff', font: 'Dancing Script' } },
+  { id: 'bubble',  name: 'Gelembung', frame: { bgType: 'pattern', pattern: 'dots', c1: '#e0f7fa', patFg: '#b2ebf2', radius: 30, pBorder: 10, pBorderColor: '#ffffff', shadow: true }, text: { color: '#00838f', font: 'Fredoka' } },
+  { id: 'autumn',  name: 'Musim Gugur', frame: { bgType: 'gradient', c1: '#f6d365', c2: '#fda085', angle: 160, style: 'corners', styleColor: '#ffffff', radius: 10 }, text: { color: '#7b3f00', font: 'Caveat' } },
+  { id: 'pinkchk', name: 'Pink Catur', frame: { bgType: 'pattern', pattern: 'checker', c1: '#ffffff', patFg: '#ffe0ec', style: 'corners', styleColor: '#ff6fa5', pBorder: 6, pBorderColor: '#ff6fa5' }, text: { color: '#ff6fa5', font: 'Pacifico' } },
+  { id: 'starmint', name: 'Bintang Mint', frame: { bgType: 'pattern', pattern: 'stars', c1: '#d7fff1', patFg: '#ffffff', style: 'line', styleColor: '#1b7a5c', radius: 16 }, text: { color: '#1b7a5c', font: 'Fredoka' } },
   { id: 'night',   name: 'Malam',    frame: { bgType: 'gradient', c1: '#232526', c2: '#414345', angle: 180, radius: 8 }, text: { color: '#ffffff', font: 'Bebas Neue' } },
 ];
 
@@ -163,4 +195,8 @@ const STICKER_IMAGES = [
   { name: 'SABER', src: 'assets/stickers/saber-cloud.png' },
   { name: 'Expression of the Year', src: 'assets/stickers/expression-of-the-year.png' },
   { name: 'Spider-Man', src: 'assets/stickers/spiderman.png' },
+  { name: 'Logo Laba-laba', src: 'assets/stickers/spider-logo.png' },
+  { name: 'Spider-Man Menembak Jaring', src: 'assets/stickers/spiderman-web.png' },
+  { name: 'Jaring Laba-laba', src: 'assets/stickers/spider-web.png' },
+  { name: 'Kacamata Hitam', src: 'assets/stickers/sunglasses.png' },
 ];

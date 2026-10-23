@@ -235,6 +235,22 @@ function drawPattern(ctx, w, h, type, bg, fg) {
         }
       break;
     }
+    case 'diamonds': {
+      const s = 64, d = 18;
+      for (let y = 0, row = 0; y < h + s; y += s / 2, row++)
+        for (let x = (row % 2) * s / 2; x < w + s; x += s) {
+          ctx.beginPath(); ctx.moveTo(x, y - d); ctx.lineTo(x + d, y); ctx.lineTo(x, y + d); ctx.lineTo(x - d, y); ctx.closePath(); ctx.fill();
+        }
+      break;
+    }
+    case 'zigzag':
+      ctx.lineWidth = 7; ctx.lineJoin = 'round';
+      for (let y = 20; y < h + 40; y += 56) {
+        ctx.beginPath();
+        for (let x = 0, k = 0; x <= w + 28; x += 28, k++) { const yy = y + (k % 2 ? 14 : -14); k ? ctx.lineTo(x, yy) : ctx.moveTo(x, yy); }
+        ctx.stroke();
+      }
+      break;
     case 'grid':
       ctx.lineWidth = 3;
       for (let x = 0; x <= w; x += 40) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke(); }
