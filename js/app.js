@@ -503,6 +503,8 @@ const TABS = [
     <h4>Bentuk &amp; ikon</h4>
     <div class="row2">${'<label class="colr"><span>Warna bentuk</span><input type="color" id="shapeColor" value="#ff5d8f"></label>'}</div>
     <div class="sgrid" id="shapeGrid"></div>
+    <h4>Stiker gambar</h4>
+    <div class="sgrid" id="imgStickers">${STICKER_IMAGES.map((m, i) => `<button class="shp" data-imgsticker="${i}" title="${m.name}"><img src="${m.src}" alt="${m.name}" style="width:100%;display:block"></button>`).join('')}</div>
     <h4>Gambar / logo sendiri</h4>
     <label class="btn ghost">Unggah gambar (PNG, JPG, SVG)<input type="file" id="imgFile" accept="image/*" hidden></label>`],
   ['text', 'Teks', '🔤', () => `
@@ -695,6 +697,13 @@ document.addEventListener('click', e => {
   if ((b = q('[data-cat]'))) { emojiCat = b.dataset.cat; return showEmoji(); }
   if ((b = q('[data-emoji]'))) return addElement({ type: 'emoji', content: b.dataset.emoji, size: baseSize() });
   if ((b = q('[data-shape]'))) return addElement({ type: 'shape', content: b.dataset.shape, size: baseSize(), color: $('#shapeColor').value });
+  if ((b = q('[data-imgsticker]'))) {
+    const m = STICKER_IMAGES[+b.dataset.imgsticker];
+    fetch(m.src).then(r => r.blob()).then(blob => loadImageFile(blob, 1200))
+      .then(c => addElement({ type: 'image', img: c, ar: c.height / c.width, size: baseSize() * 1.1 }))
+      .catch(() => toast('Stiker gambar gagal dimuat.'));
+    return;
+  }
   if ((b = q('[data-fx]'))) { state.fx = b.dataset.fx; updateFxChips(); return requestRender(); }
   if ((b = q('[data-quick]'))) return addElement({ type: 'text', content: b.dataset.quick, size: LY().w * .11, color: '#ffffff', outline: true, font: 'Pacifico', shadow: true });
   if ((b = q('[data-rotp]'))) { const [i, d] = b.dataset.rotp.split(':'); return rotatePhoto(+i, +d); }

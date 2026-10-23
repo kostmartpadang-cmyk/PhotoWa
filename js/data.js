@@ -157,3 +157,10 @@ const FX = [
   { id: 'hearts', name: 'Hati', ico: '💗' },
   { id: 'snow', name: 'Salju', ico: '❄️' },
 ];
+
+/* Stiker gambar bawaan (file di assets/stickers). Tambah file baru + baris di sini. */
+const STICKER_IMAGES = [
+  { name: 'SABER', src: 'assets/stickers/saber-cloud.png' },
+  { name: 'Expression of the Year', src: 'assets/stickers/expression-of-the-year.png' },
+  { name: 'Spider-Man', src: 'assets/stickers/spiderman.png' },
+];
