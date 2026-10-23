@@ -216,4 +216,6 @@ const STICKER_IMAGES = [
   { name: 'Domba Lucu', src: 'assets/stickers/domba-lucu.png' },
   { name: 'Kucing Mengedip', src: 'assets/stickers/kucing.png' },
   { name: 'Kucing Oren Kaget', src: 'assets/stickers/kucing-oren.png' },
+  { name: 'Kucing Bingung', src: 'assets/stickers/kucing-bingung.png' },
+  { name: 'Kucing Mikir', src: 'assets/stickers/kucing-mikir.png' },
 ];
