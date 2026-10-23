@@ -209,6 +209,7 @@ async function runSession() {
   const n = count();
   let targets = targetSlots();
   if (retakeIdx == null && filled() === n) state.photos.fill(null, 0, n);
+  if (state.timer === 0) targets = targets.slice(0, 1); // mode langsung: satu foto per tekan, tanpa menunggu
   shooting = true; cancelFlag = false;
   updateShootBtn();
   const countEl = $('#count');
@@ -226,7 +227,7 @@ async function runSession() {
     const f = $('#flash'); f.classList.add('go'); setTimeout(() => f.classList.remove('go'), 260);
     captureFrame(i);
     afterPhotosChanged();
-    await sleep(1100);
+    await sleep(state.timer === 0 ? 250 : 1100);
   }
   const aborted = cancelFlag;
   shooting = false; cancelFlag = false; curIdx = -1; retakeIdx = null;
