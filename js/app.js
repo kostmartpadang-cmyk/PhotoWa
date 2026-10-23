@@ -124,6 +124,7 @@ async function startCamera() {
     });
     video.srcObject = stream;
     await video.play();
+    updateCamAspect();
     wantCam = true;
     $('#camPh').hidden = true;
     updateVideoStyle();
@@ -149,8 +150,17 @@ function updateVideoStyle() {
   video.style.filter = toCss(filterOps(state));
 }
 function updateCamAspect() {
-  const s = getSlots(LY(), state)[0];
-  $('#cam').style.setProperty('--ar', (s.w / s.h).toFixed(4));
+  const slot = getSlots(LY(), state)[0], sar = slot.w / slot.h;
+  const live = stream && video.videoWidth > 0;
+  const car = live ? video.videoWidth / video.videoHeight : sar;
+  const cam = $('#cam'), g = $('#guide');
+  cam.style.setProperty('--ar', car.toFixed(4));
+  /* kamera tampil utuh (tanpa zoom); kotak putus-putus = area yang akan masuk ke frame */
+  const gw = sar > car ? 100 : sar / car * 100, gh = sar > car ? car / sar * 100 : 100;
+  g.style.width = gw + '%'; g.style.height = gh + '%';
+  g.hidden = !live;
+  const sh = LY().shape;
+  g.style.borderRadius = sh === 'circle' ? '50%' : sh === 'rounded' ? '12%' : '0';
 }
 
 let actx;
@@ -789,6 +799,8 @@ function init() {
 
   $('#steps').addEventListener('click', e => { const b = e.target.closest('button'); if (b && !b.disabled) goStep(b.dataset.step); });
   $('#btnCam').addEventListener('click', startCamera);
+  video.addEventListener('resize', updateCamAspect);
+  video.addEventListener('loadedmetadata', updateCamAspect);
   $('#btnToCap').addEventListener('click', () => goStep('capture'));
   $('#btnToFrame').addEventListener('click', () => goStep('frame'));
   $('#btnShoot').addEventListener('click', runSession);
