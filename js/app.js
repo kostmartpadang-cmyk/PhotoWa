@@ -7,7 +7,7 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 const state = {
-  step: 'frame', layoutId: 'strip4', dup: true,
+  step: 'frame', layoutId: 'strip4', dup: false,
   photos: [], mirror: true,
   filter: 'normal', bright: 1, contrast: 1, sat: 1, vignette: 0, grain: 0, glow: 0, leak: false, stamp: false,
   padScale: 1, gapScale: 1,
@@ -451,8 +451,8 @@ const TABS = [
     ${sl('Vinyet', 'vignette', 0, 1, .01)}${sl('Grain film', 'grain', 0, 1, .01)}${sl('Cahaya lembut (glow)', 'glow', 0, 1, .01)}
     <div class="opts">${ck('Mode cermin (foto selfie)', 'mirror')}${ck('Light leak', 'leak')}${ck('Cap tanggal retro', 'stamp')}</div>`],
   ['frame', 'Frame', '🖼️', () => `
-    <h4>Tata letak</h4><div class="layouts" data-layouts></div>
     <label class="chk dup-wrap"><input type="checkbox" data-bind="dup"> Cetak 2 strip di satu kertas 4×6</label>
+    <h4>Tata letak</h4><div class="layouts" data-layouts></div>
     <h4>Tema</h4><div class="presets" data-presets></div>
     <h4>Latar</h4>
     <div class="bgc" id="bgc" data-t="solid">
