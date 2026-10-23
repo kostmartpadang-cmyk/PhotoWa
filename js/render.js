@@ -264,6 +264,21 @@ function drawEdgeStyle(ctx, L, fr, pad) {
     const s = 30, i = 16;
     for (let x = i; x <= L.w - i + 1; x += s) for (const y of [i, L.h - i]) { ctx.beginPath(); ctx.arc(x, y, 5, 0, PI2); ctx.fill(); }
     for (let y = i + s; y < L.h - i; y += s) for (const x of [i, L.w - i]) { ctx.beginPath(); ctx.arc(x, y, 5, 0, PI2); ctx.fill(); }
+  } else if (fr.style === 'corners') {
+    const a = 90, i = 22;
+    ctx.lineWidth = 8; ctx.lineCap = 'round';
+    for (const [x, y, dx, dy] of [[i, i, 1, 1], [L.w - i, i, -1, 1], [i, L.h - i, 1, -1], [L.w - i, L.h - i, -1, -1]]) {
+      ctx.beginPath(); ctx.moveTo(x + dx * a, y); ctx.lineTo(x, y); ctx.lineTo(x, y + dy * a); ctx.stroke();
+    }
+  } else if (fr.style === 'scallop') {
+    const r = 15, s = r * 2;
+    for (let x = r; x < L.w + r; x += s) for (const y of [0, L.h]) { ctx.beginPath(); ctx.arc(x, y, r, 0, PI2); ctx.fill(); }
+    for (let y = r; y < L.h + r; y += s) for (const x of [0, L.w]) { ctx.beginPath(); ctx.arc(x, y, r, 0, PI2); ctx.fill(); }
+  } else if (fr.style === 'hearts') {
+    const s = 44, hs = 22 / 100, heart = P(SHAPES.heart.paths[0].d);
+    const put = (x, y) => { ctx.save(); ctx.translate(x, y); ctx.scale(hs, hs); ctx.translate(-50, -50); ctx.fill(heart); ctx.restore(); };
+    for (let x = 22; x <= L.w - 22 + 1; x += s) { put(x, 20); put(x, L.h - 20); }
+    for (let y = 20 + s; y < L.h - 20; y += s) { put(20, y); put(L.w - 20, y); }
   } else if (fr.style === 'film') {
     const hw = Math.max(10, Math.min(28, pad * .45)), hh = hw * 1.4, step = hh * 2.1;
     for (let y = step / 2 - hh / 2; y < L.h; y += step)

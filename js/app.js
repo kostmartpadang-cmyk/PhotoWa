@@ -463,7 +463,7 @@ const TABS = [
       <div class="if-image"><label class="btn ghost">Pilih gambar latar<input type="file" id="bgFile" accept="image/*" hidden></label></div>
     </div>
     <h4>Hiasan tepi</h4>
-    <div class="row2"><select data-bind="frame.style"><option value="none">Tanpa</option><option value="line">Garis</option><option value="double">Garis ganda</option><option value="dots">Titik-titik</option><option value="film">Rol film</option></select>${colr('Warna', 'frame.styleColor')}</div>
+    <div class="row2"><select data-bind="frame.style"><option value="none">Tanpa</option><option value="line">Garis</option><option value="double">Garis ganda</option><option value="dots">Titik-titik</option><option value="hearts">Hati</option><option value="scallop">Bergelombang</option><option value="corners">Sudut</option><option value="film">Rol film</option></select>${colr('Warna', 'frame.styleColor')}</div>
     <h4>Foto</h4>
     ${sl('Margin', 'padScale', .5, 2, .01)}${sl('Jarak antar foto', 'gapScale', 0, 2.5, .01)}${sl('Sudut membulat', 'frame.radius', 0, 140, 1)}${sl('Tebal bingkai foto', 'frame.pBorder', 0, 30, 1)}
     <div class="row2">${colr('Warna bingkai foto', 'frame.pBorderColor')}${ck('Bayangan', 'frame.shadow')}</div>`],
