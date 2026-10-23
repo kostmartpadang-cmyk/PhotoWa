@@ -119,10 +119,23 @@ function buildSlot(photo, W, H, st) {
   const src = photo.canvas, sr = src.width / src.height, dr = W / H;
   let sx = 0, sy = 0, sw = src.width, sh = src.height;
   if (sr > dr) { sw = sh * dr; sx = (src.width - sw) / 2; } else { sh = sw / dr; sy = (src.height - sh) / 2; }
-  const d = stepDown(src, sx, sy, sw, sh, W, H);
   x.imageSmoothingQuality = 'high';
   if (st.mirror && photo.src === 'cam') { x.translate(W, 0); x.scale(-1, 1); }
-  x.drawImage(d.cur, d.cx, d.cy, d.cw, d.ch, 0, 0, W, H);
+  if (st.fitAll && Math.abs(sr - dr) > .02) {
+    /* foto utuh: latar blur dari foto itu sendiri + foto penuh di tengah */
+    const sm = document.createElement('canvas');
+    sm.width = Math.max(2, W >> 4); sm.height = Math.max(2, H >> 4);
+    const smx = sm.getContext('2d'); smx.imageSmoothingQuality = 'high';
+    smx.drawImage(src, sx, sy, sw, sh, 0, 0, sm.width, sm.height);
+    x.drawImage(sm, 0, 0, W, H);
+    x.fillStyle = 'rgba(0,0,0,.22)'; x.fillRect(0, 0, W, H);
+    const k = Math.min(W / src.width, H / src.height), dw = Math.round(src.width * k), dh = Math.round(src.height * k);
+    const f = stepDown(src, 0, 0, src.width, src.height, dw, dh);
+    x.drawImage(f.cur, f.cx, f.cy, f.cw, f.ch, Math.round((W - dw) / 2), Math.round((H - dh) / 2), dw, dh);
+  } else {
+    const d = stepDown(src, sx, sy, sw, sh, W, H);
+    x.drawImage(d.cur, d.cx, d.cy, d.cw, d.ch, 0, 0, W, H);
+  }
   x.setTransform(1, 0, 0, 1, 0, 0);
 
   const m = filterMatrix(filterOps(st));
@@ -178,7 +191,7 @@ function buildSlot(photo, W, H, st) {
 
 function getSlotImage(photo, sw, sh, scale, st) {
   const W = Math.max(2, Math.round(sw * scale)), H = Math.max(2, Math.round(sh * scale));
-  const key = [photo.id, W, H, st.filter, st.bright, st.contrast, st.sat, st.vignette, st.grain, st.glow, st.leak, st.stamp, st.mirror && photo.src === 'cam'].join('|');
+  const key = [photo.id, W, H, st.filter, st.bright, st.contrast, st.sat, st.vignette, st.grain, st.glow, st.leak, st.stamp, st.fitAll, st.mirror && photo.src === 'cam'].join('|');
   let c = slotCache.get(key);
   if (!c) {
     c = buildSlot(photo, W, H, st);
@@ -481,7 +494,7 @@ function drawUnit(ctx, L, st, scale, opts, first) {
 function renderPaper(ctx, scale, st, opts = {}) {
   const L = LAYOUTS[st.layoutId], n = (L.dup && st.dup) ? 2 : 1;
   ctx.save();
-  ctx.setTransform(scale, 0, 0, scale, (opts.ox || 0) * scale, 0);
+  ctx.setTransform(scale, 0, 0, scale, (opts.ox || 0) * scale, (opts.oy || 0) * scale);
   for (let c = 0; c < n; c++) {
     ctx.save();
     ctx.translate(c * L.w, 0);

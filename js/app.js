@@ -15,7 +15,7 @@ const state = {
   text: { title: 'PHOTOBOOTH', sub: '', showDate: true, font: 'Poppins', color: '#222222', scale: 1 },
   fx: 'none', fxAmount: 1,
   elements: [], selected: null,
-  timer: 3, sound: true, zoom: 1, fullStrip: false,
+  timer: 3, sound: true, zoom: 1, landCanvas: false, fitAll: false, fullStrip: false,
   dl: { fmt: 'png', dpi: 300, q: 0.95 },
 };
 let photoSeq = 1, elSeq = 1;
@@ -26,7 +26,9 @@ const filled = () => state.photos.slice(0, count()).filter(Boolean).length;
 const paperSize = () => { const l = LY(); return { w: l.w * (l.dup && state.dup ? 2 : 1), h: l.h }; };
 /* mode 1 strip: strip ditaruh di tengah kertas 4×6 dengan ruang kosong kiri-kanan */
 const centered = () => LY().dup && !state.dup && !state.fullStrip;
-const outSize = () => { const pz = paperSize(); return { w: centered() ? pz.w * 2 : pz.w, h: pz.h }; };
+/* layout lanskap: opsional diletakkan di tengah kanvas potret 4×6 */
+const landCanvas = () => LY().w > LY().h && state.landCanvas;
+const outSize = () => { const pz = paperSize(); return landCanvas() ? { w: 1200, h: 1800 } : { w: centered() ? pz.w * 2 : pz.w, h: pz.h }; };
 const getPath = (o, p) => p.split('.').reduce((a, k) => a?.[k], o);
 const setPath = (o, p, v) => { const k = p.split('.'); const last = k.pop(); k.reduce((a, x) => a[x], o)[last] = v; };
 const fmtVal = v => typeof v !== 'number' ? '' : (Number.isInteger(v) || Math.abs(v) >= 10 ? String(Math.round(v)) : v.toFixed(2));
@@ -171,7 +173,7 @@ function updateCamAspect() {
   /* kamera tampil utuh (tanpa zoom); kotak putus-putus = area yang akan masuk ke frame */
   const gw = sar > car ? 100 : sar / car * 100, gh = sar > car ? car / sar * 100 : 100;
   g.style.width = gw + '%'; g.style.height = gh + '%';
-  g.hidden = !live;
+  g.hidden = !live || state.fitAll;
   const sh = LY().shape;
   g.style.borderRadius = sh === 'circle' ? '50%' : sh === 'rounded' ? '12%' : '0';
 }
@@ -195,6 +197,9 @@ function captureFrame(i) {
   const x = c.getContext('2d');
   x.translate(c.width / 2, c.height / 2); x.rotate(camRot * Math.PI / 180);
   x.drawImage(video, -vw / 2, -vh / 2);
+  const d = x.getImageData(c.width / 2 - 20, c.height / 2 - 20, 40, 40).data;
+  let sum = 0; for (let k = 0; k < d.length; k += 4) sum += d[k] + d[k + 1] + d[k + 2];
+  if (sum < 40) toast('Foto tampak hitam — pastikan kamera sudah menyala dan tidak tertutup.');
   setPhoto(i, c, facing === 'user' ? 'cam' : 'back');
 }
 
@@ -470,7 +475,7 @@ const colr = (label, bind) => `<label class="colr"><span>${label}</span><input t
 const fontOpts = FONTS.map(f => `<option value="${f.name}">${f.label}</option>`).join('');
 
 const TABS = [
-  ['photo', 'Foto', '📷', () => '<div id="photoList"></div>'],
+  ['photo', 'Foto', '📷', () => `${ck('Foto utuh (jangan dipotong)', 'fitAll')}<div id="photoList"></div>`],
   ['filter', 'Filter', '🎨', () => `
     <div class="chips" data-filters></div>
     ${sl('Kecerahan', 'bright', .5, 1.5, .01)}${sl('Kontras', 'contrast', .5, 1.5, .01)}${sl('Saturasi', 'sat', 0, 2, .01)}
@@ -573,7 +578,7 @@ function refreshPhotoPane() {
   const box = $('#photoList'); if (!box) return;
   const sl = getSlots(LY(), state)[0], wantLandscape = sl.w / sl.h > 1.2;
   const bad = state.photos.slice(0, count()).some(p => p && wantLandscape && p.canvas.width < p.canvas.height);
-  box.innerHTML = (bad ? '<p class="warn">Layout ini lanskap tetapi fotomu portrait, jadi hanya potongan tengahnya yang terlihat. Putar fotonya dengan tombol ⟲ / ⟳ di bawah.</p>' : '') + Array.from({ length: count() }, (_, i) => {
+  box.innerHTML = (bad ? '<p class="warn">Layout ini lanskap tetapi fotomu portrait, jadi hanya potongan tengahnya yang terlihat. Centang “Foto utuh” di atas atau putar fotonya dengan ⟲ / ⟳.</p>' : '') + Array.from({ length: count() }, (_, i) => {
     const p = state.photos[i];
     return `<div class="prow"><div class="pth">${p ? `<img src="${p.thumb}" alt="">` : '<span>—</span>'}</div>
       <div class="pmeta"><b>Foto ${i + 1}</b><small>${p ? `${p.canvas.width}×${p.canvas.height} px` : 'Kosong'}</small></div>
@@ -660,7 +665,7 @@ function syncBinds() {
 function onBind(path) {
   if (path === 'frame.bgType') $('#bgc').dataset.t = state.frame.bgType;
   if (path === 'dup') { fitCanvas(); if (state.step === 'download') buildDownload(); }
-  if (path === 'padScale') updateCamAspect();
+  if (path === 'padScale' || path === 'fitAll') updateCamAspect();
   if (path === 'zoom') fitCanvas();
   if (['mirror', 'bright', 'contrast', 'sat'].includes(path)) { updateVideoStyle(); refreshThumbs(); }
   requestRender();
@@ -723,6 +728,11 @@ function buildDownload() {
       <button data-paper="0" class="${!state.dup && !state.fullStrip ? 'on' : ''}">1200×1800<small>1 strip di tengah</small></button>
       <button data-paper="full" class="${!state.dup && state.fullStrip ? 'on' : ''}">600×1800<small>1 strip, tanpa kanvas</small></button>
     </div>` : ''}
+    ${LY().w > LY().h ? `<h4>Ukuran kertas</h4>
+    <div class="seg" id="landSeg">
+      <button data-land="0" class="${state.landCanvas ? '' : 'on'}">1800×1200<small>Lanskap, tanpa kanvas</small></button>
+      <button data-land="1" class="${state.landCanvas ? 'on' : ''}">1200×1800<small>Di tengah kanvas 4×6</small></button>
+    </div>` : ''}
     <h4>Format</h4>
     <div class="seg" id="fmtSeg"><button data-fmt="png" class="${state.dl.fmt === 'png' ? 'on' : ''}">PNG<small>Tajam, file besar</small></button><button data-fmt="jpg" class="${state.dl.fmt === 'jpg' ? 'on' : ''}">JPG<small>File jauh lebih kecil</small></button></div>
     <h4>Kualitas</h4>
@@ -740,7 +750,8 @@ function buildDownload() {
 
 $('#dlPanel').addEventListener('click', e => {
   const b = e.target.closest('button'); if (!b) return;
-  if (b.dataset.paper) { state.dup = b.dataset.paper === '1'; state.fullStrip = b.dataset.paper === 'full'; syncBinds(); fitCanvas(); buildDownload(); }
+  if (b.dataset.land) { state.landCanvas = b.dataset.land === '1'; buildDownload(); }
+  else if (b.dataset.paper) { state.dup = b.dataset.paper === '1'; state.fullStrip = b.dataset.paper === 'full'; syncBinds(); fitCanvas(); buildDownload(); }
   else if (b.dataset.fmt) { state.dl.fmt = b.dataset.fmt; $$('#fmtSeg button').forEach(x => x.classList.toggle('on', x === b)); }
   else if (b.dataset.dpi) { state.dl.dpi = +b.dataset.dpi; $$('#dpiSeg button').forEach(x => x.classList.toggle('on', x === b)); }
   else if (b.id === 'btnDownload') doDownload(b);
@@ -750,17 +761,20 @@ $('#dlPanel').addEventListener('click', e => {
 });
 
 async function exportBlob(fmt, dpi) {
-  const pz = outSize(), s = dpi / 300;
+  const pz = outSize(), s = dpi / 300, l = LY();
   const c = document.createElement('canvas');
   c.width = Math.round(pz.w * s); c.height = Math.round(pz.h * s);
   const x = c.getContext('2d');
   x.imageSmoothingQuality = 'high';
-  if (centered()) {
-    const fr = state.frame;
-    x.fillStyle = fr.bgType === 'solid' || fr.bgType === 'gradient' || fr.bgType === 'pattern' ? fr.c1 : '#ffffff';
-    x.fillRect(0, 0, c.width, c.height);
-  } else { x.fillStyle = state.frame.c1 || '#fff'; x.fillRect(0, 0, c.width, c.height); }
-  renderPaper(x, s, state, { ui: false, ox: centered() ? LY().w / 2 : 0 });
+  const fr = state.frame;
+  x.fillStyle = (centered() || landCanvas()) && fr.bgType === 'image' ? '#ffffff' : (fr.c1 || '#ffffff');
+  x.fillRect(0, 0, c.width, c.height);
+  if (landCanvas()) { // skala layout lanskap agar lebarnya = lebar kanvas, lalu taruh di tengah
+    const k = pz.w / l.w;
+    renderPaper(x, s * k, state, { ui: false, oy: (pz.h / k - l.h) / 2 });
+  } else {
+    renderPaper(x, s, state, { ui: false, ox: centered() ? l.w / 2 : 0 });
+  }
   const blob = await new Promise(r => c.toBlob(r, fmt === 'jpg' ? 'image/jpeg' : 'image/png', state.dl.q));
   if (!blob) throw new Error('Gagal membuat gambar (memori tidak cukup?). Coba resolusi lebih rendah.');
   return fmt === 'jpg' ? setJpegDpi(blob, dpi) : setPngDpi(blob, dpi);
