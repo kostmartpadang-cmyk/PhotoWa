@@ -34,6 +34,7 @@ const LAYOUTS = {
   nt3: { name: 'Polos 3 Foto', desc: '4×6 in • tanpa teks', w: 1200, h: 1800, cols: 1, rows: 3, count: 3, pad: 60, gap: 36, footer: 0, notext: true },
   nt4: { name: 'Polos 4 Foto', desc: '4×6 in • tanpa teks', w: 1200, h: 1800, cols: 2, rows: 2, count: 4, pad: 60, gap: 40, footer: 0, notext: true },
   nt5: { name: 'Polos 5 Foto', desc: '4×6 in • tanpa teks', w: 1200, h: 1800, count: 5, pad: 60, gap: 0, footer: 0, notext: true, custom: [[60, 60, 1080, 700], [60, 800, 530, 470], [610, 800, 530, 470], [60, 1310, 530, 430], [610, 1310, 530, 430]] },
+  nt4a: { name: 'Polos Kolase 1+3', desc: '4×6 in • tanpa teks', w: 1200, h: 1800, count: 4, pad: 60, gap: 0, footer: 0, notext: true, custom: [[60, 60, 1080, 840], [60, 940, 340, 800], [430, 940, 340, 800], [800, 940, 340, 800]] },
   /* ===== strip 2×6 (satu strip) ===== */
   strip4:  { name: 'Strip 4 Foto', desc: '2×6 in', w: 600, h: 1800, cols: 1, rows: 4, count: 4, pad: 40, gap: 28, footer: 210, dup: true },
   strip5:  { name: 'Strip 5 Foto', desc: '2×6 in', w: 600, h: 1800, cols: 1, rows: 5, count: 5, pad: 36, gap: 20, footer: 150, dup: true },
