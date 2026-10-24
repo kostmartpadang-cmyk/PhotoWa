@@ -28,6 +28,12 @@ const LAYOUTS = {
   heart1: { name: 'Hati',        desc: '4×6 in', w: 1200, h: 1800, cols: 1, rows: 1, count: 1, pad: 70, gap: 0, footer: 300, shape: 'heart' },
   heart2: { name: 'Hati 2',      desc: '4×6 in', w: 1200, h: 1800, cols: 1, rows: 2, count: 2, pad: 70, gap: 30, footer: 260, shape: 'heart' },
   star1:  { name: 'Bintang',     desc: '4×6 in', w: 1200, h: 1800, cols: 1, rows: 1, count: 1, pad: 70, gap: 0, footer: 300, shape: 'star' },
+  /* ===== tanpa teks (footer 0, teks tidak digambar) ===== */
+  nt1: { name: 'Polos 1 Foto', desc: '4×6 in • tanpa teks', w: 1200, h: 1800, cols: 1, rows: 1, count: 1, pad: 60, gap: 0,  footer: 0, notext: true },
+  nt2: { name: 'Polos 2 Foto', desc: '4×6 in • tanpa teks', w: 1200, h: 1800, cols: 1, rows: 2, count: 2, pad: 60, gap: 40, footer: 0, notext: true },
+  nt3: { name: 'Polos 3 Foto', desc: '4×6 in • tanpa teks', w: 1200, h: 1800, cols: 1, rows: 3, count: 3, pad: 60, gap: 36, footer: 0, notext: true },
+  nt4: { name: 'Polos 4 Foto', desc: '4×6 in • tanpa teks', w: 1200, h: 1800, cols: 2, rows: 2, count: 4, pad: 60, gap: 40, footer: 0, notext: true },
+  nt5: { name: 'Polos 5 Foto', desc: '4×6 in • tanpa teks', w: 1200, h: 1800, count: 5, pad: 60, gap: 0, footer: 0, notext: true, custom: [[60, 60, 1080, 700], [60, 800, 530, 470], [610, 800, 530, 470], [60, 1310, 530, 430], [610, 1310, 530, 430]] },
   /* ===== strip 2×6 (satu strip) ===== */
   strip4:  { name: 'Strip 4 Foto', desc: '2×6 in', w: 600, h: 1800, cols: 1, rows: 4, count: 4, pad: 40, gap: 28, footer: 210, dup: true },
   strip5:  { name: 'Strip 5 Foto', desc: '2×6 in', w: 600, h: 1800, cols: 1, rows: 5, count: 5, pad: 36, gap: 20, footer: 150, dup: true },

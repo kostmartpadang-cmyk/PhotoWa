@@ -498,7 +498,7 @@ function drawUnit(ctx, L, st, scale, opts, first) {
     ctx.restore();
   });
 
-  drawFooterText(ctx, L, st, bottom);
+  if (!L.notext) drawFooterText(ctx, L, st, bottom);
   drawFx(ctx, L, st);
   for (const el of st.elements) drawElement(ctx, el, scale);
   if (opts.ui && first) {
