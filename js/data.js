@@ -28,13 +28,8 @@ const LAYOUTS = {
   heart1: { name: 'Hati',        desc: '4×6 in', w: 1200, h: 1800, cols: 1, rows: 1, count: 1, pad: 70, gap: 0, footer: 300, shape: 'heart' },
   heart2: { name: 'Hati 2',      desc: '4×6 in', w: 1200, h: 1800, cols: 1, rows: 2, count: 2, pad: 70, gap: 30, footer: 260, shape: 'heart' },
   star1:  { name: 'Bintang',     desc: '4×6 in', w: 1200, h: 1800, cols: 1, rows: 1, count: 1, pad: 70, gap: 0, footer: 300, shape: 'star' },
-  /* ===== tanpa teks (footer 0, teks tidak digambar) ===== */
-  nt1: { name: 'Polos 1 Foto', desc: '4×6 in • tanpa teks', w: 1200, h: 1800, cols: 1, rows: 1, count: 1, pad: 60, gap: 0,  footer: 0, notext: true },
-  nt2: { name: 'Polos 2 Foto', desc: '4×6 in • tanpa teks', w: 1200, h: 1800, cols: 1, rows: 2, count: 2, pad: 60, gap: 40, footer: 0, notext: true },
+  /* ===== tanpa teks: nt3 manual; versi "Polos" layout lain dibuat otomatis di bawah ===== */
   nt3: { name: 'Polos 3 Foto', desc: '4×6 in • tanpa teks', w: 1200, h: 1800, cols: 1, rows: 3, count: 3, pad: 60, gap: 36, footer: 0, notext: true },
-  nt4: { name: 'Polos 4 Foto', desc: '4×6 in • tanpa teks', w: 1200, h: 1800, cols: 2, rows: 2, count: 4, pad: 60, gap: 40, footer: 0, notext: true },
-  nt5: { name: 'Polos 5 Foto', desc: '4×6 in • tanpa teks', w: 1200, h: 1800, count: 5, pad: 60, gap: 0, footer: 0, notext: true, custom: [[60, 60, 1080, 700], [60, 800, 530, 470], [610, 800, 530, 470], [60, 1310, 530, 430], [610, 1310, 530, 430]] },
-  nt4a: { name: 'Polos Kolase 1+3', desc: '4×6 in • tanpa teks', w: 1200, h: 1800, count: 4, pad: 60, gap: 0, footer: 0, notext: true, custom: [[60, 60, 1080, 840], [60, 940, 340, 800], [430, 940, 340, 800], [800, 940, 340, 800]] },
   /* ===== strip 2×6 (satu strip) ===== */
   strip4:  { name: 'Strip 4 Foto', desc: '2×6 in', w: 600, h: 1800, cols: 1, rows: 4, count: 4, pad: 40, gap: 28, footer: 210, dup: true },
   strip5:  { name: 'Strip 5 Foto', desc: '2×6 in', w: 600, h: 1800, cols: 1, rows: 5, count: 5, pad: 36, gap: 20, footer: 150, dup: true },
@@ -42,6 +37,17 @@ const LAYOUTS = {
   strip2: { name: 'Strip 2 Foto', desc: '2×6 in', w: 600, h: 1800, cols: 1, rows: 2, count: 2, pad: 40, gap: 28, footer: 330, dup: true },
   circle3:{ name: 'Bulat 3',     desc: '2×6 in', w: 600, h: 1800, cols: 1, rows: 3, count: 3, pad: 40, gap: 28, footer: 280, shape: 'circle', dup: true },
 };
+
+/* Buat versi "Polos" (tanpa teks, foto memenuhi kertas) untuk setiap layout yang punya footer. */
+for (const [id, l] of Object.entries({ ...LAYOUTS })) {
+  if (l.notext || !l.footer) continue;
+  const n = { ...l, name: 'Polos ' + l.name, desc: l.desc + ' • tanpa teks', footer: 0, notext: true };
+  if (l.custom) {
+    const top = l.pad, bottom = Math.max(...l.custom.map(c => c[1] + c[3])), k = (l.h - l.pad - top) / (bottom - top);
+    n.custom = l.custom.map(([x, y, w, h]) => [x, Math.round(top + (y - top) * k), w, Math.round(h * k)]);
+  }
+  LAYOUTS['nt_' + id] = n;
+}
 
 /* ops: daftar [fungsi, nilai] mengikuti spesifikasi CSS filter */
 const FILTERS = [
