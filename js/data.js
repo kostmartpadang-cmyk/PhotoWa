@@ -232,4 +232,6 @@ const STICKER_IMAGES = [
   { name: 'Kucing Bingung', src: 'assets/stickers/kucing-bingung.png' },
   { name: 'Kucing Mikir', src: 'assets/stickers/kucing-mikir.png' },
   { name: 'Kucing Menerawang', src: 'assets/stickers/kucing-pensive.png' },
+  { name: 'Bunga Biru', src: 'assets/stickers/bunga-biru.png' },
+  { name: 'Bintang Laut', src: 'assets/stickers/bintang-laut.png' },
 ];
